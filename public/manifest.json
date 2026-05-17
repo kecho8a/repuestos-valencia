@@ -2,7 +2,7 @@
   "name": "TuRepuestoValencia - Repuestos Premium Valencia",
   "short_name": "TRValencia",
   "description": "Buscador de repuestos premium y delivery en Valencia, Carabobo, Venezuela, San Diego, Naguanagua.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#2563eb",
