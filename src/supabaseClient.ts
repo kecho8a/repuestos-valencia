@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // @ts-ignore: module may not be installed in this environment yet
 import { createClient } from '@supabase/supabase-js';
 
@@ -11,3 +12,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default supabase;
+
