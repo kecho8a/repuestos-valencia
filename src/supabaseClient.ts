@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // @ts-ignore: module may not be installed in this environment yet
 import { createClient } from '@supabase/supabase-js';
 
