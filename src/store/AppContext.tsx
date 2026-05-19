@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AutoPart, Order, StoreConfig, InAppNotification, OrderItem, AppUser } from '../types/store';
+import { supabase } from '../supabaseClient';
 
 interface AppContextProps {
   parts: AutoPart[];
@@ -412,6 +413,54 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem('trv_favorites', JSON.stringify(favorites));
   }, [favorites]);
+
+  // Attempt to load catalog from Supabase if env vars are present
+  useEffect(() => {
+    const loadFromSupabase = async () => {
+      try {
+        if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) return;
+        const { data, error } = await supabase
+          .from('repuestos_catalogo')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        if (error) {
+          console.error('Supabase error fetching repuestos_catalogo:', error);
+          return;
+        }
+
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((r: any) => ({
+            id: r.id,
+            codigo: r.codigo,
+            nombre: r.nombre,
+            descripcion: r.descripcion,
+            categoria: r.categoria,
+            marca_carro: r.marca_carro,
+            modelo_carro: r.modelo_carro,
+            marca_repuesto: r.marca_repuesto || '',
+            condicion: r.condicion || 'Nuevo',
+            anio_inicio: r.anio_inicio,
+            anio_fin: r.anio_fin,
+            precio_usd: typeof r.precio_usd === 'string' ? parseFloat(r.precio_usd) : r.precio_usd,
+            stock: typeof r.stock === 'string' ? parseInt(r.stock, 10) : r.stock,
+            imagen_urls: r.imagen_urls || [],
+            es_promo: r.es_promo || false,
+            es_nuevo: r.es_nuevo || false,
+            es_mas_vendido: r.es_mas_vendido || false,
+            compatibilidad_detalle: r.compatibilidad_detalle || ''
+          } as AutoPart));
+
+          setParts(mapped);
+        }
+      } catch (err) {
+        console.error('Error cargando repuestos desde Supabase', err);
+      }
+    };
+
+    loadFromSupabase();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('trv_admin_user', adminUser);
